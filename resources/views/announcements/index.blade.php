@@ -1,4 +1,10 @@
 <x-app-layout>
+    @push('breadcrumbs')
+        <x-breadcrumbs :items="[
+            ['label' => 'Dashboard', 'url' => route('dashboard')],
+            ['label' => 'Pengumuman'],
+        ]" />
+    @endpush
     <x-slot name="header">
         <div class="flex flex-wrap items-center justify-between gap-2">
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">{{ __('Pengumuman') }}</h2>

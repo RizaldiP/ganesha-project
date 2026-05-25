@@ -1,4 +1,11 @@
 <x-app-layout>
+    @push('breadcrumbs')
+        <x-breadcrumbs :items="[
+            ['label' => 'Dashboard', 'url' => route('dashboard')],
+            ['label' => 'Pekerjaan', 'url' => route('tasks.index')],
+            ['label' => $task->title],
+        ]" />
+    @endpush
     <x-slot name="header">
         <div class="flex items-center justify-between gap-4">
             <h2 class="font-semibold text-xl text-gray-800 leading-tight min-w-0 truncate">{{ $task->title }}</h2>
@@ -261,7 +268,7 @@
                                 imgLoading: false,
                                 uploadImage(e) {
                                     e.preventDefault();
-                                    const form = e.currentTarget;
+                                    const form = e.currentTarget.closest("form") || this.$el.querySelector("form");
                                     if (!form) return;
                                     this.imgLoading = true;
                                     const fd = new FormData(form);
@@ -275,7 +282,7 @@
                                         if (res.success) {
                                             this.imageUrl = res.image_url;
                                             this.hasImage = res.has_image;
-                                            form.querySelector('input[type="file"]').value = '';
+                                            form.querySelector("input[type=&apos;file&apos;]").value = "";
                                         }
                                         this.imgLoading = false;
                                     })

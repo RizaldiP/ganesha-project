@@ -90,7 +90,7 @@
                 @endif
 
                 {{-- Pekerjaan (dropdown) --}}
-                @php $pekerjaanActive = request()->routeIs('tasks.*') || request()->routeIs('work-documents.*'); @endphp
+                @php $pekerjaanActive = request()->routeIs('tasks.*') || request()->routeIs('work-documents.*') || request()->routeIs('sph.*'); @endphp
                 <div x-data="{ open: @json($pekerjaanActive) }">
                     <button @click.prevent="open = !open"
                             class="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-sm font-medium transition duration-150 ease-in-out
@@ -138,6 +138,12 @@
                                   {{ request()->routeIs('work-documents.*') ? 'bg-white/15 text-white shadow-sm' : 'text-indigo-200 hover:text-white hover:bg-white/10' }}">
                             <div class="w-1.5 h-1.5 rounded-full bg-indigo-300"></div>
                             <span class="flex-1">Kelengkapan Pekerjaan</span>
+                        </a>
+                        <a href="{{ route('sph.index') }}"
+                           class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition duration-150 ease-in-out
+                                  {{ request()->routeIs('sph.*') ? 'bg-white/15 text-white shadow-sm' : 'text-indigo-200 hover:text-white hover:bg-white/10' }}">
+                            <div class="w-1.5 h-1.5 rounded-full bg-indigo-300"></div>
+                            <span class="flex-1">Kalkulasi SPH</span>
                         </a>
                         @endif
                     </div>

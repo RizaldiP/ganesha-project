@@ -1,4 +1,11 @@
 <x-app-layout>
+    @push('breadcrumbs')
+        <x-breadcrumbs :items="[
+            ['label' => 'Dashboard', 'url' => route('dashboard')],
+            ['label' => 'M. Aktif Surat', 'url' => route('letter-active-periods.index')],
+            ['label' => 'Buat'],
+        ]" />
+    @endpush
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">Buat Surat</h2>
     </x-slot>

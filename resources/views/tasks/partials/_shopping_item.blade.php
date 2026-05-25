@@ -28,7 +28,7 @@
             if (res.success) {
                 this.imageUrl = res.image_url;
                 this.hasImage = res.has_image;
-                form.querySelector('input[type="file"]').value = '';
+                form.querySelector("input[type=&apos;file&apos;]").value = "";
             }
             this.imgLoading = false;
         })

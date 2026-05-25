@@ -1,4 +1,12 @@
 <x-app-layout>
+    @push('breadcrumbs')
+        <x-breadcrumbs :items="[
+            ['label' => 'Dashboard', 'url' => route('dashboard')],
+            ['label' => 'Pengumuman', 'url' => route('announcements.index')],
+            ['label' => $announcement->title, 'url' => route('announcements.show', $announcement)],
+            ['label' => 'Edit'],
+        ]" />
+    @endpush
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">{{ __('Edit Pengumuman') }}</h2>
     </x-slot>

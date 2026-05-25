@@ -1,4 +1,10 @@
 <x-app-layout>
+    @push('breadcrumbs')
+        <x-breadcrumbs :items="[
+            ['label' => 'Dashboard', 'url' => route('dashboard')],
+            ['label' => 'Dokumen Pekerjaan'],
+        ]" />
+    @endpush
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">Dokumen Pekerjaan</h2>
     </x-slot>
@@ -107,6 +113,58 @@
                                         </template>
                                         <x-input-error :messages="$errors->get('spektek_file')" class="mt-2" />
                                     </div>
+
+                                    <div>
+                                        <x-input-label for="daftar_belanja_file" value="Daftar Belanja (PDF/Excel)" />
+                                        <input id="daftar_belanja_file" type="file" name="daftar_belanja_file" accept=".pdf,.xls,.xlsx" class="block w-full text-sm file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100" />
+                                        <template x-if="form.daftar_belanja_file">
+                                            <div class="mt-1.5 flex items-center gap-2">
+                                                <a x-bind:href="storageUrl + form.daftar_belanja_file" target="_blank" class="inline-flex items-center px-2 py-1 text-xs font-medium rounded bg-indigo-50 text-indigo-700 hover:bg-indigo-100 transition">Lihat</a>
+                                                <a x-bind:href="storageUrl + form.daftar_belanja_file" download class="inline-flex items-center px-2 py-1 text-xs font-medium rounded bg-green-50 text-green-700 hover:bg-green-100 transition">Download</a>
+                                                <button type="button" @click="deleteFile('daftar_belanja_file')" class="inline-flex items-center px-2 py-1 text-xs font-medium rounded bg-red-50 text-red-700 hover:bg-red-100 transition">Hapus</button>
+                                            </div>
+                                        </template>
+                                        <x-input-error :messages="$errors->get('daftar_belanja_file')" class="mt-2" />
+                                    </div>
+
+                                    <div>
+                                        <x-input-label for="pengumuman_lelang_file" value="Pengumuman Lelang (PDF)" />
+                                        <input id="pengumuman_lelang_file" type="file" name="pengumuman_lelang_file" accept=".pdf" class="block w-full text-sm file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100" />
+                                        <template x-if="form.pengumuman_lelang_file">
+                                            <div class="mt-1.5 flex items-center gap-2">
+                                                <a x-bind:href="storageUrl + form.pengumuman_lelang_file" target="_blank" class="inline-flex items-center px-2 py-1 text-xs font-medium rounded bg-indigo-50 text-indigo-700 hover:bg-indigo-100 transition">Lihat</a>
+                                                <a x-bind:href="storageUrl + form.pengumuman_lelang_file" download class="inline-flex items-center px-2 py-1 text-xs font-medium rounded bg-green-50 text-green-700 hover:bg-green-100 transition">Download</a>
+                                                <button type="button" @click="deleteFile('pengumuman_lelang_file')" class="inline-flex items-center px-2 py-1 text-xs font-medium rounded bg-red-50 text-red-700 hover:bg-red-100 transition">Hapus</button>
+                                            </div>
+                                        </template>
+                                        <x-input-error :messages="$errors->get('pengumuman_lelang_file')" class="mt-2" />
+                                    </div>
+
+                                    <div>
+                                        <x-input-label for="ba_mulai_file" value="BA Mulai (PDF)" />
+                                        <input id="ba_mulai_file" type="file" name="ba_mulai_file" accept=".pdf" class="block w-full text-sm file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100" />
+                                        <template x-if="form.ba_mulai_file">
+                                            <div class="mt-1.5 flex items-center gap-2">
+                                                <a x-bind:href="storageUrl + form.ba_mulai_file" target="_blank" class="inline-flex items-center px-2 py-1 text-xs font-medium rounded bg-indigo-50 text-indigo-700 hover:bg-indigo-100 transition">Lihat</a>
+                                                <a x-bind:href="storageUrl + form.ba_mulai_file" download class="inline-flex items-center px-2 py-1 text-xs font-medium rounded bg-green-50 text-green-700 hover:bg-green-100 transition">Download</a>
+                                                <button type="button" @click="deleteFile('ba_mulai_file')" class="inline-flex items-center px-2 py-1 text-xs font-medium rounded bg-red-50 text-red-700 hover:bg-red-100 transition">Hapus</button>
+                                            </div>
+                                        </template>
+                                        <x-input-error :messages="$errors->get('ba_mulai_file')" class="mt-2" />
+                                    </div>
+
+                                    <div>
+                                        <x-input-label for="ba_selesai_file" value="BA Selesai (PDF)" />
+                                        <input id="ba_selesai_file" type="file" name="ba_selesai_file" accept=".pdf" class="block w-full text-sm file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100" />
+                                        <template x-if="form.ba_selesai_file">
+                                            <div class="mt-1.5 flex items-center gap-2">
+                                                <a x-bind:href="storageUrl + form.ba_selesai_file" target="_blank" class="inline-flex items-center px-2 py-1 text-xs font-medium rounded bg-indigo-50 text-indigo-700 hover:bg-indigo-100 transition">Lihat</a>
+                                                <a x-bind:href="storageUrl + form.ba_selesai_file" download class="inline-flex items-center px-2 py-1 text-xs font-medium rounded bg-green-50 text-green-700 hover:bg-green-100 transition">Download</a>
+                                                <button type="button" @click="deleteFile('ba_selesai_file')" class="inline-flex items-center px-2 py-1 text-xs font-medium rounded bg-red-50 text-red-700 hover:bg-red-100 transition">Hapus</button>
+                                            </div>
+                                        </template>
+                                        <x-input-error :messages="$errors->get('ba_selesai_file')" class="mt-2" />
+                                    </div>
                                 </div>
 
                                 <div>
@@ -131,6 +189,18 @@
                                         <label class="flex items-center gap-2 text-sm">
                                             <input type="checkbox" name="verifikasi_iii" value="1" x-model="form.verifikasi_iii" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500">
                                             Verifikasi III
+                                        </label>
+                                        <label class="flex items-center gap-2 text-sm">
+                                            <input type="checkbox" name="dokpra" value="1" x-model="form.dokpra" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500">
+                                            Dokpra
+                                        </label>
+                                        <label class="flex items-center gap-2 text-sm">
+                                            <input type="checkbox" name="dok_tagihan" value="1" x-model="form.dok_tagihan" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500">
+                                            Dok Tagihan
+                                        </label>
+                                        <label class="flex items-center gap-2 text-sm">
+                                            <input type="checkbox" name="lelang" value="1" x-model="form.lelang" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500">
+                                            Lelang
                                         </label>
                                     </div>
                                 </div>
@@ -192,6 +262,9 @@
                                     <th class="pb-3 pr-3 font-medium">Ver I</th>
                                     <th class="pb-3 pr-3 font-medium">Ver II</th>
                                     <th class="pb-3 pr-3 font-medium">Ver III</th>
+                                    <th class="pb-3 pr-3 font-medium">Dokpra</th>
+                                    <th class="pb-3 pr-3 font-medium">Dok Tagihan</th>
+                                    <th class="pb-3 pr-3 font-medium">Lelang</th>
                                     <th class="pb-3 pr-3 font-medium">TDS</th>
                                     <th class="pb-3 pr-3 font-medium">TDM</th>
                                 </tr>
@@ -206,6 +279,9 @@
                                         <td class="py-3 pr-3" x-html="doc.verifikasi_i ? checkHtml : crossHtml"></td>
                                         <td class="py-3 pr-3" x-html="doc.verifikasi_ii ? checkHtml : crossHtml"></td>
                                         <td class="py-3 pr-3" x-html="doc.verifikasi_iii ? checkHtml : crossHtml"></td>
+                                        <td class="py-3 pr-3" x-html="doc.dokpra ? checkHtml : crossHtml"></td>
+                                        <td class="py-3 pr-3" x-html="doc.dok_tagihan ? checkHtml : crossHtml"></td>
+                                        <td class="py-3 pr-3" x-html="doc.lelang ? checkHtml : crossHtml"></td>
                                         <td class="py-3 pr-3" x-text="doc.tds ?? '-'"></td>
                                         <td class="py-3 pr-3" x-text="doc.tdm ?? '-'"></td>
                                     </tr>
@@ -240,6 +316,13 @@
                 sph_file: '',
                 spk_file: '',
                 spektek_file: '',
+                daftar_belanja_file: '',
+                pengumuman_lelang_file: '',
+                ba_mulai_file: '',
+                ba_selesai_file: '',
+                dokpra: false,
+                dok_tagihan: false,
+                lelang: false,
                 tds: '',
                 tdm: '',
             },
@@ -363,6 +446,13 @@
                         this.form.sph_file = d.sph_file ?? '';
                         this.form.spk_file = d.spk_file ?? '';
                         this.form.spektek_file = d.spektek_file ?? '';
+                        this.form.daftar_belanja_file = d.daftar_belanja_file ?? '';
+                        this.form.pengumuman_lelang_file = d.pengumuman_lelang_file ?? '';
+                        this.form.ba_mulai_file = d.ba_mulai_file ?? '';
+                        this.form.ba_selesai_file = d.ba_selesai_file ?? '';
+                        this.form.dokpra = d.dokpra;
+                        this.form.dok_tagihan = d.dok_tagihan;
+                        this.form.lelang = d.lelang;
                         this.form.tds = d.tds ?? '';
                         this.form.tdm = d.tdm ?? '';
                     } else {
@@ -379,6 +469,13 @@
                         this.form.sph_file = '';
                         this.form.spk_file = '';
                         this.form.spektek_file = '';
+                        this.form.daftar_belanja_file = '';
+                        this.form.pengumuman_lelang_file = '';
+                        this.form.ba_mulai_file = '';
+                        this.form.ba_selesai_file = '';
+                        this.form.dokpra = false;
+                        this.form.dok_tagihan = false;
+                        this.form.lelang = false;
                         this.form.tds = '';
                         this.form.tdm = '';
                     }

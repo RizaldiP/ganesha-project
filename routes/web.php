@@ -10,6 +10,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\TodoController;
 use App\Http\Controllers\WorkDocumentController;
+use App\Http\Controllers\SphController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -97,6 +98,16 @@ Route::middleware('auth')->group(function () {
         Route::get('work-documents/{task}/document', [WorkDocumentController::class, 'getDocument'])->name('work-documents.document');
         Route::delete('work-documents/{task}', [WorkDocumentController::class, 'destroy'])->name('work-documents.destroy');
         Route::delete('work-documents/{task}/file', [WorkDocumentController::class, 'destroyFile'])->name('work-documents.file.destroy');
+    });
+
+    Route::middleware(['role:super_admin|administrasi'])->group(function () {
+        Route::get('sph', [SphController::class, 'index'])->name('sph.index');
+        Route::get('sph/create', [SphController::class, 'create'])->name('sph.create');
+        Route::post('sph', [SphController::class, 'store'])->name('sph.store');
+        Route::get('sph/{sph}', [SphController::class, 'show'])->name('sph.show');
+        Route::get('sph/{sph}/edit', [SphController::class, 'edit'])->name('sph.edit');
+        Route::patch('sph/{sph}', [SphController::class, 'update'])->name('sph.update');
+        Route::delete('sph/{sph}', [SphController::class, 'destroy'])->name('sph.destroy');
     });
 
     Route::middleware(['role:super_admin'])->prefix('admin')->name('admin.')->group(function () {

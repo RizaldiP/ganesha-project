@@ -1,4 +1,11 @@
 <x-app-layout>
+    @push('breadcrumbs')
+        <x-breadcrumbs :items="[
+            ['label' => 'Dashboard', 'url' => route('dashboard')],
+            ['label' => 'Dokumen', 'url' => route('documents.index')],
+            ['label' => $document->title],
+        ]" />
+    @endpush
     <x-slot name="header">
         <div class="flex flex-wrap items-center justify-between gap-2">
             <h2 class="font-semibold text-xl text-gray-800 leading-tight break-words">{{ $document->title }}</h2>

@@ -1,4 +1,12 @@
 <x-app-layout>
+    @push('breadcrumbs')
+        <x-breadcrumbs :items="[
+            ['label' => 'Dashboard', 'url' => route('dashboard')],
+            ['label' => 'Dokumen', 'url' => route('documents.index')],
+            ['label' => $document->title, 'url' => route('documents.show', $document)],
+            ['label' => 'Edit'],
+        ]" />
+    @endpush
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">{{ __('Edit Document') }}</h2>
     </x-slot>

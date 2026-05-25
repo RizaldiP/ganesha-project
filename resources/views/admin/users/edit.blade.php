@@ -1,4 +1,13 @@
 <x-app-layout>
+    @push('breadcrumbs')
+        <x-breadcrumbs :items="[
+            ['label' => 'Dashboard', 'url' => route('dashboard')],
+            ['label' => 'Admin', 'url' => route('admin.users.index')],
+            ['label' => 'Users', 'url' => route('admin.users.index')],
+            ['label' => $user->name, 'url' => route('admin.users.edit', $user)],
+            ['label' => 'Edit'],
+        ]" />
+    @endpush
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">{{ __('Edit User') }}: {{ $user->name }}</h2>
     </x-slot>

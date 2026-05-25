@@ -65,6 +65,13 @@ class WorkDocumentController extends Controller
             'sph_file' => ['nullable', 'file', 'max:10240', 'mimes:pdf,xls,xlsx'],
             'spk_file' => ['nullable', 'file', 'max:10240', 'mimes:pdf,xls,xlsx,doc,docx'],
             'spektek_file' => ['nullable', 'file', 'max:10240', 'mimes:pdf,xls,xlsx'],
+            'daftar_belanja_file' => ['nullable', 'file', 'max:10240', 'mimes:pdf,xls,xlsx'],
+            'pengumuman_lelang_file' => ['nullable', 'file', 'max:10240', 'mimes:pdf'],
+            'ba_mulai_file' => ['nullable', 'file', 'max:10240', 'mimes:pdf'],
+            'ba_selesai_file' => ['nullable', 'file', 'max:10240', 'mimes:pdf'],
+            'dokpra' => ['boolean'],
+            'dok_tagihan' => ['boolean'],
+            'lelang' => ['boolean'],
             'tds' => ['nullable', 'date'],
             'tdm' => ['nullable', 'date'],
         ]);
@@ -74,11 +81,14 @@ class WorkDocumentController extends Controller
         $validated['verifikasi_i'] = $request->boolean('verifikasi_i');
         $validated['verifikasi_ii'] = $request->boolean('verifikasi_ii');
         $validated['verifikasi_iii'] = $request->boolean('verifikasi_iii');
+        $validated['dokpra'] = $request->boolean('dokpra');
+        $validated['dok_tagihan'] = $request->boolean('dok_tagihan');
+        $validated['lelang'] = $request->boolean('lelang');
 
         $taskId = $validated['task_id'];
         $existing = WorkDocument::where('task_id', $taskId)->first();
 
-        $fileFields = ['sik_file', 'sph_file', 'spk_file', 'spektek_file'];
+        $fileFields = ['sik_file', 'sph_file', 'spk_file', 'spektek_file', 'daftar_belanja_file', 'pengumuman_lelang_file', 'ba_mulai_file', 'ba_selesai_file'];
         foreach ($fileFields as $field) {
             if ($request->hasFile($field)) {
                 if ($existing && $existing->$field) {
@@ -112,7 +122,7 @@ class WorkDocumentController extends Controller
     public function destroyFile(Request $request, Task $task): JsonResponse
     {
         $validated = $request->validate([
-            'field' => ['required', Rule::in(['sik_file', 'sph_file', 'spk_file', 'spektek_file'])],
+            'field' => ['required', Rule::in(['sik_file', 'sph_file', 'spk_file', 'spektek_file', 'daftar_belanja_file', 'pengumuman_lelang_file', 'ba_mulai_file', 'ba_selesai_file'])],
         ]);
 
         $document = WorkDocument::where('task_id', $task->id)->firstOrFail();
@@ -131,7 +141,7 @@ class WorkDocumentController extends Controller
     {
         $document = WorkDocument::where('task_id', $task->id)->firstOrFail();
 
-        $fileFields = ['sik_file', 'sph_file', 'spk_file', 'spektek_file'];
+        $fileFields = ['sik_file', 'sph_file', 'spk_file', 'spektek_file', 'daftar_belanja_file', 'pengumuman_lelang_file', 'ba_mulai_file', 'ba_selesai_file'];
         foreach ($fileFields as $field) {
             if ($document->$field) {
                 Storage::disk('public')->delete($document->$field);
