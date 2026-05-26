@@ -11,9 +11,15 @@ use ZipArchive;
 
 class LetterTemplateController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
-        $templates = LetterTemplate::latest()->paginate(10);
+        $query = LetterTemplate::query();
+
+        if ($search = $request->input('search')) {
+            $query->where('name', 'like', "%{$search}%");
+        }
+
+        $templates = $query->latest()->paginate(10)->withQueryString();
         return view('letter-templates.index', compact('templates'));
     }
 

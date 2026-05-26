@@ -29,12 +29,33 @@
                 </div>
             @endif
 
-            <div class="bg-white shadow-sm rounded-lg overflow-hidden">
-                <div class="p-4 border-b border-gray-200 text-sm text-gray-500">
-                    Kelola template surat. Upload file DOCX, system akan otomatis mendeteksi placeholder [...].
+            {{-- Search --}}
+            <div class="bg-white shadow-sm rounded-lg overflow-hidden mb-6">
+                <div class="p-4">
+                    <form method="GET" action="{{ route('letter-templates.index') }}" class="flex items-center gap-3">
+                        <div class="flex-1">
+                            <input type="text" name="search" value="{{ request('search') }}"
+                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm"
+                                   placeholder="Cari template surat...">
+                        </div>
+                        <button type="submit"
+                                class="px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700 transition">
+                            Cari
+                        </button>
+                        @if(request('search'))
+                            <a href="{{ route('letter-templates.index') }}"
+                               class="px-4 py-2 bg-gray-200 text-gray-700 text-sm font-medium rounded-md hover:bg-gray-300 transition">
+                                Reset
+                            </a>
+                        @endif
+                    </form>
                 </div>
+            </div>
 
-                @if($templates->isEmpty())
+            <div class="bg-white shadow-sm rounded-lg overflow-hidden">
+                @if($templates->isEmpty() && request('search'))
+                    <div class="p-6 text-center text-gray-400 text-sm">Tidak ditemukan template dengan kata kunci "<strong>{{ request('search') }}</strong>".</div>
+                @elseif($templates->isEmpty())
                     <div class="p-6 text-center text-gray-400 text-sm">Belum ada template. Klik "Upload Template" untuk memulai.</div>
                 @else
                     <table class="min-w-full divide-y divide-gray-200">
