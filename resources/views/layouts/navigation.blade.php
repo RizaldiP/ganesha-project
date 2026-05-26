@@ -196,6 +196,20 @@
                     </a>
                 @endif
 
+                {{-- Template Surat --}}
+                @if($user->hasAnyRole(['super_admin', 'administrasi']))
+                    <a href="{{ route('letter-templates.index') }}"
+                       class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition duration-150 ease-in-out
+                              {{ request()->routeIs('letter-templates.*') ? 'bg-white/15 text-white shadow-sm' : 'text-indigo-100 hover:text-white hover:bg-white/10' }}">
+                        <svg class="w-5 h-5 shrink-0" stroke="currentColor" fill="none" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h4l2 4h10l2 4H9l-2-4H3V4z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14h.01M8 14h.01M16 14h.01" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 20h18" />
+                        </svg>
+                        <span>Template Surat</span>
+                    </a>
+                @endif
+
                 {{-- Pengumuman --}}
                 <a href="{{ route('announcements.index') }}"
                    class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition duration-150 ease-in-out
