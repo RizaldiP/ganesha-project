@@ -96,69 +96,34 @@
                 </div>
                 @endif
 
-                <div class="pt-4 border-t">
+                <div x-data="{ loading: false }">
                     <h3 class="text-sm font-semibold text-gray-500 mb-3">Update Status</h3>
                     <div class="flex items-center gap-3">
-                        <span class="px-3 py-1 text-sm rounded-full font-medium
-                            @if($task->status === 'pending') bg-gray-200 text-gray-800
-                            @elseif($task->status === 'progress') bg-yellow-200 text-yellow-800
-                            @elseif($task->status === 'done') bg-green-200 text-green-800
-                            @else bg-red-200 text-red-800 @endif">
-                            {{ ucfirst($task->status) }}
-                        </span>
-
-                        @if ($task->status === 'pending')
-                            <form x-data="{ loading: false }" x-on:submit="loading = true" action="{{ route('tasks.status.update', $task) }}" method="POST">
-                                @csrf @method('PATCH')
-                                <input type="hidden" name="status" value="progress">
-                                <button x-bind:disabled="loading" type="submit" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-500">
-                                    <span x-show="!loading">Mulai Pekerjaan</span>
-                                    <span x-show="loading" class="inline-flex items-center">
-                                        <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                        </svg>
-                                        Mulai Pekerjaan
-                                    </span>
-                                </button>
-                            </form>
-                        @endif
-
-                        @if ($task->status === 'progress')
-                            <form x-data="{ loading: false }" x-on:submit="if(confirm('Yakin ingin menyelesaikan pekerjaan ini?')) loading = true; else $event.preventDefault()" action="{{ route('tasks.status.update', $task) }}" method="POST">
-                                @csrf @method('PATCH')
-                                <input type="hidden" name="status" value="done">
-                                <button x-bind:disabled="loading" type="submit" class="inline-flex items-center px-4 py-2 bg-green-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-500">
+                        <span class="px-3 py-1 text-sm rounded-full font-medium"
+                              x-bind:class="{
+                                  'bg-gray-200 text-gray-800': $store.taskStatus.status === 'pending',
+                                  'bg-yellow-200 text-yellow-800': $store.taskStatus.status === 'progress',
+                                  'bg-green-200 text-green-800': $store.taskStatus.status === 'done',
+                                  'bg-red-200 text-red-800': !['pending','progress','done'].includes($store.taskStatus.status)
+                              }" x-text="$store.taskStatus.status.charAt(0).toUpperCase() + $store.taskStatus.status.slice(1)"></span>
+                        <template x-if="$store.taskStatus.status === 'progress'">
+                            <div class="flex items-center gap-2">
+                                <button @click="if(!confirm('Yakin ingin menyelesaikan pekerjaan ini?')) return; loading = true; fetch('{{ route('tasks.status.update', $task) }}', { method: 'PATCH', headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json', 'Content-Type': 'application/json' }, body: JSON.stringify({ status: 'done' }) }).then(r => r.json()).then(d => { if(d.success) Alpine.store('taskStatus').status = 'done'; loading = false; }).catch(() => loading = false)" x-bind:disabled="loading" class="inline-flex items-center px-4 py-2 bg-green-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-500">
                                     <span x-show="!loading">Selesaikan Pekerjaan</span>
                                     <span x-show="loading" class="inline-flex items-center">
-                                        <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                        </svg>
+                                        <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
                                         Selesaikan Pekerjaan
                                     </span>
                                 </button>
-                            </form>
-                            <form x-data="{ loading: false }" x-on:submit="loading = true" action="{{ route('tasks.status.update', $task) }}" method="POST">
-                                @csrf @method('PATCH')
-                                <input type="hidden" name="status" value="pending">
-                                <button x-bind:disabled="loading" type="submit" class="inline-flex items-center px-4 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-500">
+                                <button @click="if(!confirm('Kembalikan ke Pending?')) return; loading = true; fetch('{{ route('tasks.status.update', $task) }}', { method: 'PATCH', headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json', 'Content-Type': 'application/json' }, body: JSON.stringify({ status: 'pending' }) }).then(r => r.json()).then(d => { if(d.success) Alpine.store('taskStatus').status = 'pending'; loading = false; }).catch(() => loading = false)" x-bind:disabled="loading" class="inline-flex items-center px-4 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-500">
                                     <span x-show="!loading">Kembali ke Pending</span>
                                     <span x-show="loading" class="inline-flex items-center">
-                                        <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                        </svg>
+                                        <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
                                         Kembali ke Pending
                                     </span>
                                 </button>
-                            </form>
-                        @endif
-
-                        @if ($task->status === 'done')
-                            <span class="text-sm text-green-600 font-medium">Pekerjaan selesai</span>
-                        @endif
-                    </div>
+                            </div>
+                        </template>
                     </div>
                 </div>
 
@@ -226,6 +191,7 @@
                             <x-primary-button class="text-xs w-full sm:w-auto">Tambah Item</x-primary-button>
                         </form>
                     @endif
+
                 </div>
                 @endif
 
@@ -615,4 +581,24 @@
         </div>
         </div>
     </div>
+    @push('scripts')
+    @php
+        $initialStoreStatus = 'pending';
+        if ($task->task_type === 'teknisi') {
+            foreach ($task->teknisiTaskItems as $item) {
+                if (in_array($item->status, ['progress', 'done'])) {
+                    $initialStoreStatus = 'progress';
+                    break;
+                }
+            }
+        } else {
+            $initialStoreStatus = $task->status;
+        }
+    @endphp
+    <script>
+        document.addEventListener('alpine:init', () => {
+            Alpine.store('taskStatus', { status: @json($initialStoreStatus) });
+        });
+    </script>
+    @endpush
 </x-app-layout>

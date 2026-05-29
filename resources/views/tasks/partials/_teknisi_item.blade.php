@@ -9,7 +9,39 @@
     imgLoading: false,
     imageCount: {{ $item->images->count() }},
     maxImages: 2,
+    taskStatus: @json($item->status),
+    statusLoading: false,
+    updateStatus(status) {
+        this.statusLoading = true;
+        fetch("{{ route('tasks.teknisi-items.status.update', [$task, $item]) }}", {
+            method: "PATCH",
+            headers: { "X-CSRF-TOKEN": "{{ csrf_token() }}", "Accept": "application/json", "Content-Type": "application/json" },
+            body: JSON.stringify({ status: status })
+        })
+        .then(r => r.json())
+        .then(d => {
+            if (d.success) {
+                this.taskStatus = d.status;
+                if (d.is_checked !== undefined) {
+                    this.checked = d.is_checked;
+                    this.checkedBy = d.checked_by;
+                    let pct = d.total > 0 ? Math.round((d.checked / d.total) * 100) : 0;
+                    let bar = document.getElementById("teknisi-progress-bar");
+                    let text = document.getElementById("teknisi-progress-text");
+                    if (bar) bar.style.width = pct + "%";
+                    if (text) text.textContent = d.checked + " of " + d.total + " items checked (" + pct + "%)";
+                }
+                if (window.Alpine && d.status !== "pending") Alpine.store("taskStatus").status = "progress";
+            }
+            this.statusLoading = false;
+        })
+        .catch(() => this.statusLoading = false);
+    },
     toggle() {
+        if (this.taskStatus !== "done") {
+            alert("Status item belum selesai. Silakan selesaikan pekerjaan terlebih dahulu.");
+            return;
+        }
         this.loading = true;
         fetch("{{ route("tasks.teknisi-items.toggle", [$task, $item]) }}", {
             method: "PATCH",
@@ -150,8 +182,8 @@
         })
         .catch(() => location.reload());
     }
-}' class="bg-gray-50 rounded-md px-4 py-2 text-sm" x-bind:class="checked ? 'opacity-60' : ''">
-    <div class="flex items-center justify-between">
+}' class="bg-white border border-gray-200 rounded-lg px-4 py-3 text-sm shadow-sm" x-bind:class="checked ? 'opacity-60' : ''">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0">
         <div class="flex items-center gap-3 min-w-0 flex-1">
             <button @click.prevent="toggle()" x-bind:disabled="loading" class="shrink-0">
                 <svg x-show="checked" class="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
@@ -161,15 +193,43 @@
                     <rect x="3" y="3" width="18" height="18" rx="3" stroke-width="2"/>
                 </svg>
             </button>
-            <span class="font-medium" x-bind:class="checked ? 'line-through text-gray-400' : ''" x-text="itemName"></span>
+            <span class="font-medium break-words min-w-0" x-bind:class="checked ? 'line-through text-gray-400' : ''" x-text="itemName"></span>
             <template x-if="checked && checkedBy">
-                <span class="text-xs text-blue-600 ml-1" x-text="'by ' + checkedBy"></span>
+                <span class="text-xs text-blue-600 ml-1 shrink-0" x-text="'by ' + checkedBy"></span>
             </template>
         </div>
         @if (auth()->user()->hasAnyRole(['super_admin', 'administrasi', 'teknisi']))
-        <div class="flex items-center gap-2 shrink-0 ml-3">
-            <button type="button" @click.prevent="editOpen = !editOpen" class="text-indigo-500 hover:text-indigo-700 text-xs">Edit</button>
-            <button @click.prevent="remove($event)" x-bind:disabled="loading" class="text-red-500 hover:text-red-700 text-xs">Remove</button>
+        <div class="flex items-center gap-1.5 flex-wrap shrink-0 sm:ml-2">
+            <form x-show="taskStatus === 'pending'" @submit.prevent="updateStatus('progress')" class="inline">
+                <button x-bind:disabled="statusLoading" type="submit" class="inline-flex items-center gap-1 px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium rounded transition-colors">
+                    <svg x-show="!statusLoading" class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/></svg>
+                    <span x-show="!statusLoading">Mulai</span>
+                    <span x-show="statusLoading">
+                        <svg class="animate-spin h-3 w-3 text-white" viewBox="0 0 24 24" fill="none"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
+                    </span>
+                </button>
+            </form>
+            <form x-show="taskStatus === 'progress'" @submit.prevent="if(!confirm('Yakin ingin menyelesaikan pekerjaan ini?')) return; updateStatus('done')" class="inline">
+                <button x-bind:disabled="statusLoading" type="submit" class="inline-flex items-center gap-1 px-2 py-1 bg-green-600 hover:bg-green-700 text-white text-xs font-medium rounded transition-colors">
+                    <svg x-show="!statusLoading" class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                    <span x-show="!statusLoading">Selesaikan</span>
+                    <span x-show="statusLoading">
+                        <svg class="animate-spin h-3 w-3 text-white" viewBox="0 0 24 24" fill="none"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
+                    </span>
+                </button>
+            </form>
+            <span x-show="taskStatus === 'done'" class="inline-flex items-center gap-1 px-1.5 py-0.5 text-green-700 bg-green-50 text-xs font-medium rounded">
+                <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                Selesai
+            </span>
+            <button type="button" @click.prevent="editOpen = !editOpen" class="inline-flex items-center gap-1 px-2 py-1 text-indigo-600 hover:text-indigo-800 text-xs font-medium rounded hover:bg-indigo-50 transition-colors">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                Edit
+            </button>
+            <button @click.prevent="remove($event)" x-bind:disabled="loading" class="inline-flex items-center gap-1 px-2 py-1 text-red-600 hover:text-red-800 text-xs font-medium rounded hover:bg-red-50 transition-colors">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                Hapus
+            </button>
         </div>
         @endif
     </div>

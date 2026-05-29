@@ -126,31 +126,37 @@
         })
         .catch(() => location.reload());
     }
-}' class="bg-gray-50 rounded-md px-4 py-2 text-sm" x-bind:class="checked ? 'opacity-60' : ''">
-    <div class="flex items-center justify-between">
-        <div class="flex items-center gap-3 min-w-0 flex-1">
+}' class="bg-white border border-gray-200 rounded-lg px-4 py-3 text-sm shadow-sm" x-bind:class="checked ? 'opacity-60' : ''">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0">
+        <div class="flex items-center gap-3 min-w-0 flex-1 flex-wrap">
             <button @click.prevent="toggle()" x-bind:disabled="loading" class="shrink-0">
-                <svg x-show="checked" class="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                <svg x-show="checked" class="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
                     <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
                 </svg>
                 <svg x-show="!checked" class="w-5 h-5 text-gray-300 hover:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <rect x="3" y="3" width="18" height="18" rx="3" stroke-width="2"/>
                 </svg>
             </button>
-            <span class="font-medium" x-bind:class="checked ? 'line-through text-gray-400' : ''" x-text="itemName"></span>
+            <span class="font-medium break-words min-w-0" x-bind:class="checked ? 'line-through text-gray-400' : ''" x-text="itemName"></span>
             <span class="text-xs text-gray-400" x-text="'(' + itemQty + (itemUnit ? ' ' + itemUnit : '') + ')'"></span>
             <span class="text-xs text-gray-400" x-show="itemNotes" x-text="'- ' + itemNotes"></span>
             <span class="text-xs text-gray-500 font-medium" x-show="itemPrice" x-text="'@ Rp ' + Number(itemPrice).toLocaleString('id-ID')"></span>
             <template x-if="checked && checkedBy">
-                <span class="text-xs text-green-600 ml-1" x-text="'by ' + checkedBy"></span>
+                <span class="text-xs text-blue-600 ml-1 shrink-0" x-text="'by ' + checkedBy"></span>
             </template>
         </div>
-        <div class="flex items-center gap-2 shrink-0 ml-3">
+        <div class="flex items-center gap-1.5 flex-wrap shrink-0 sm:ml-2">
             @if (auth()->user()->hasAnyRole(['super_admin', 'administrasi', 'logistic', 'teknisi']))
-                <button type="button" @click.prevent="editOpen = !editOpen" class="text-indigo-500 hover:text-indigo-700 text-xs">Edit</button>
+                <button type="button" @click.prevent="editOpen = !editOpen" class="inline-flex items-center gap-1 px-2 py-1 text-indigo-600 hover:text-indigo-800 text-xs font-medium rounded hover:bg-indigo-50 transition-colors">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                    Edit
+                </button>
             @endif
             @if (!auth()->user()->hasRole('logistic'))
-                                    <button @click.prevent="remove($event)" x-bind:disabled="loading" class="text-red-500 hover:text-red-700 text-xs">Remove</button>
+                <button @click.prevent="remove($event)" x-bind:disabled="loading" class="inline-flex items-center gap-1 px-2 py-1 text-red-600 hover:text-red-800 text-xs font-medium rounded hover:bg-red-50 transition-colors">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                    Hapus
+                </button>
             @endif
         </div>
     </div>

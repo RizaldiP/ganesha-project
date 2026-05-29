@@ -12,6 +12,7 @@ use App\Http\Controllers\TodoController;
 use App\Http\Controllers\WorkDocumentController;
 use App\Http\Controllers\SphController;
 use App\Http\Controllers\ActivityLogController;
+use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\LetterTemplateController;
 use Illuminate\Support\Facades\Route;
 
@@ -49,6 +50,7 @@ Route::middleware('auth')->group(function () {
         Route::patch('tasks/{task}/teknisi-items/{item}/toggle', [TaskController::class, 'toggleTeknisiTaskItem'])->name('tasks.teknisi-items.toggle');
         Route::post('tasks/{task}/teknisi-items/{item}/images', [TaskController::class, 'uploadTeknisiTaskItemImage'])->name('tasks.teknisi-items.images.upload');
         Route::delete('tasks/teknisi-items/images/{image}', [TaskController::class, 'destroyTeknisiTaskItemImage'])->name('tasks.teknisi-items.images.destroy');
+        Route::patch('tasks/{task}/teknisi-items/{item}/status', [TaskController::class, 'updateTeknisiTaskItemStatus'])->name('tasks.teknisi-items.status.update');
         Route::patch('tasks/{task}/teknisi-items/{item}', [TaskController::class, 'updateTeknisiTaskItem'])->name('tasks.teknisi-items.update');
         Route::delete('tasks/{task}/teknisi-items/{item}', [TaskController::class, 'destroyTeknisiTaskItem'])->name('tasks.teknisi-items.destroy');
         Route::post('tasks/{task}/share-link', [TaskController::class, 'generateShareLink'])->name('tasks.share-link');
@@ -124,6 +126,14 @@ Route::middleware('auth')->group(function () {
     Route::middleware(['role:super_admin|administrasi'])->group(function () {
         Route::get('activity-logs', [ActivityLogController::class, 'index'])->name('activity-logs.index');
         Route::post('activity-logs/destroy-before', [ActivityLogController::class, 'destroyBefore'])->name('activity-logs.destroy-before');
+    });
+
+    Route::middleware(['role:super_admin|administrasi'])->group(function () {
+        Route::get('calendar', [CalendarController::class, 'index'])->name('calendar.index');
+        Route::get('calendar/events', [CalendarController::class, 'events'])->name('calendar.events');
+        Route::post('calendar/events', [CalendarController::class, 'store'])->name('calendar.store');
+        Route::patch('calendar/events/{calendarEvent}', [CalendarController::class, 'update'])->name('calendar.update');
+        Route::delete('calendar/events/{calendarEvent}', [CalendarController::class, 'destroy'])->name('calendar.destroy');
     });
 
     Route::middleware(['role:super_admin'])->prefix('admin')->name('admin.')->group(function () {

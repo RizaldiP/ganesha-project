@@ -138,6 +138,16 @@
                                         </svg>
                                         <span class="text-gray-800">{{ $item->item_name }}</span>
                                     @endif
+                                    <span class="ml-auto shrink-0 px-2 py-0.5 text-xs font-medium rounded
+                                        @if($item->status === 'pending') bg-gray-100 text-gray-600
+                                        @elseif($item->status === 'progress') bg-yellow-100 text-yellow-700
+                                        @elseif($item->status === 'done') bg-green-100 text-green-700
+                                        @else bg-gray-100 text-gray-600 @endif">
+                                        @if($item->status === 'pending') Pending
+                                        @elseif($item->status === 'progress') Progress
+                                        @elseif($item->status === 'done') Selesai
+                                        @else Pending @endif
+                                    </span>
                                 </div>
 
                                 @if ($item->images->isNotEmpty())

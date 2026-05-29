@@ -14,12 +14,18 @@ class TeknisiTaskItem extends Model
         'is_checked',
         'checked_by',
         'created_by',
+        'status',
+    ];
+
+    protected $attributes = [
+        'status' => 'pending',
     ];
 
     protected function casts(): array
     {
         return [
             'is_checked' => 'boolean',
+            'status' => 'string',
         ];
     }
 

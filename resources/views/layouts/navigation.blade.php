@@ -184,6 +184,18 @@
                     </a>
                 @endif
 
+                {{-- Kalender --}}
+                @if($user->hasAnyRole(['super_admin', 'administrasi']))
+                    <a href="{{ route('calendar.index') }}"
+                       class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition duration-150 ease-in-out
+                              {{ request()->routeIs('calendar.*') ? 'bg-white/15 text-white shadow-sm' : 'text-indigo-100 hover:text-white hover:bg-white/10' }}">
+                        <svg class="w-5 h-5 shrink-0" stroke="currentColor" fill="none" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        <span>Kalender</span>
+                    </a>
+                @endif
+
                 {{-- Activity Log --}}
                 @if($user->hasAnyRole(['super_admin', 'administrasi']))
                     <a href="{{ route('activity-logs.index') }}"

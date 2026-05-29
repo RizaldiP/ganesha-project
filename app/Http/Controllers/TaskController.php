@@ -228,6 +228,10 @@ class TaskController extends Controller
             default => 'Status diubah menjadi Pending.',
         };
 
+        if ($request->expectsJson()) {
+            return response()->json(['success' => true, 'status' => $validated['status']]);
+        }
+
         return redirect()->route('tasks.show', $task)->with('success', $message);
     }
 
@@ -423,6 +427,7 @@ class TaskController extends Controller
         $item = $task->teknisiTaskItems()->create([
             'item_name' => $validated['item_name'],
             'created_by' => $user->id,
+            'status' => 'pending',
         ]);
 
         app(ActivityLogger::class)
@@ -514,6 +519,45 @@ class TaskController extends Controller
         }
 
         return redirect()->route('tasks.show', $task)->with('success', 'Checklist item removed.');
+    }
+
+    public function updateTeknisiTaskItemStatus(Request $request, Task $task, TeknisiTaskItem $item)
+    {
+        $this->authorizeAccess($task);
+
+        $validated = $request->validate([
+            'status' => ['required', 'in:pending,progress,done'],
+        ]);
+
+        $oldStatus = $item->status;
+        $item->update($validated);
+
+        if ($item->status === 'done' && !$item->is_checked) {
+            $item->update(['is_checked' => true, 'checked_by' => $request->user()->id]);
+            $item->load('checker');
+        }
+
+        if ($item->status === 'progress' && $task->status !== 'done') {
+            \Illuminate\Support\Facades\DB::table('tasks')->where('id', $task->id)->update(['status' => 'progress']);
+        }
+
+        app(ActivityLogger::class)
+            ->on($item)
+            ->withLogName('teknisi_item')
+            ->withProperties(['old_status' => $oldStatus, 'new_status' => $item->status])
+            ->log("mengubah status item \"{$item->item_name}\" menjadi {$item->status}");
+
+        $total = $task->teknisiTaskItems()->count();
+        $checked = $task->teknisiTaskItems()->where('is_checked', true)->count();
+
+        return response()->json([
+            'success' => true,
+            'status' => $item->status,
+            'is_checked' => $item->is_checked,
+            'checked_by' => $item->checker?->name,
+            'total' => $total,
+            'checked' => $checked,
+        ]);
     }
 
     public function uploadTeknisiTaskItemImage(Request $request, Task $task, TeknisiTaskItem $item)
